@@ -2,11 +2,13 @@
   "name": "weathergpt-frontend",
   "version": "1.0.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "next dev -p 3000",
     "build": "next build",
     "start": "next start -p 3000",
-    "lint": "next lint"
+    "lint": "next lint",
+    "audit:health": "node scripts/audit_repo_health.js"
   },
   "dependencies": {
     "clsx": "^2.1.1",
