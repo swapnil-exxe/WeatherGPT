@@ -33,3 +33,31 @@ def history_weather(
 @router.get("/geocode")
 def geocode(query: str = Query(..., description="Location search query")):
     return geocode_location(query)
+
+def calculate_aqi_category(pm25: float, pm10: float) -> dict:
+    """Calculates Air Quality Index category and health advisory based on PM2.5 and PM10."""
+    score = max(pm25 * 4.0, pm10 * 2.0)
+    if score <= 50:
+        return {"aqi": int(score), "category": "Good", "color": "emerald", "advisory": "Air quality is satisfactory. Enjoy outdoor activities."}
+    elif score <= 100:
+        return {"aqi": int(score), "category": "Moderate", "color": "yellow", "advisory": "Acceptable air quality. Sensitive individuals should reduce intense outdoor activities."}
+    elif score <= 200:
+        return {"aqi": int(score), "category": "Unhealthy", "color": "orange", "advisory": "Unhealthy for sensitive groups. Wear N95 mask outdoors."}
+    else:
+        return {"aqi": int(score), "category": "Hazardous", "color": "rose", "advisory": "Hazardous air pollution level. Avoid all outdoor physical activities."}
+
+@router.get("/air-quality")
+def air_quality(
+    lat: float = Query(19.0760, description="Latitude"),
+    lon: float = Query(72.8777, description="Longitude"),
+    pm25: float = Query(12.5, ge=0.0, description="PM2.5 concentration in ug/m3"),
+    pm10: float = Query(25.0, ge=0.0, description="PM10 concentration in ug/m3")
+):
+    result = calculate_aqi_category(pm25, pm10)
+    result.update({
+        "latitude": lat,
+        "longitude": lon,
+        "pollutants": {"pm25": pm25, "pm10": pm10}
+    })
+    return result
+
