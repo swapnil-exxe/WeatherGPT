@@ -17,7 +17,7 @@ def current_weather(
 def forecast_weather(
     lat: float = Query(19.0760, description="Latitude"),
     lon: float = Query(72.8777, description="Longitude"),
-    days: int = Query(7, description="Days forecast (1-16)")
+    days: int = Query(7, ge=1, le=16, description="Days forecast (1-16)")
 ):
     return get_forecast(lat, lon, days=days)
 
